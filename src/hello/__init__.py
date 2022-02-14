@@ -1,7 +1,7 @@
 """
-pspark package.
+hello package.
 
-Python Spark monorepo
+Python Spark hello world example
 """
 
 from typing import List

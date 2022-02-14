@@ -8,41 +8,14 @@ description = "Python Spark monorepo"
 authors = [{name = "None", email = "None"}]
 license = {file = "LICENSE"}
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 keywords = []
 dynamic = ["version"]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Topic :: Documentation",
-    "Topic :: Software Development",
-    "Topic :: Software Development :: Documentation",
-    "Topic :: Utilities",
-    "Typing :: Typed",
+classifiers = []
+dependencies = [
+    "pyspark>=3.2.1",
+    "random-word>=1.0.7"
 ]
-dependencies = []
-
-[project.urls]
-Homepage = "https://pkg.github.io/pkg"
-Documentation = "https://pkg.github.io/pkg"
-Changelog = "https://pkg.github.io/pkg/changelog"
-Repository = "https://github.com/pkg/pkg"
-Issues = "https://github.com/pkg/pkg/issues"
-Discussions = "https://github.com/pkg/pkg/discussions"
-Gitter = "https://gitter.im/pkg/community"
-Funding = "https://github.com/sponsors/pkg"
-
-[project.scripts]
-pspark = "pspark.cli:main"
 
 [tool.pdm]
 version = {use_scm = true}
@@ -50,16 +23,6 @@ package-dir = "src"
 
 [tool.pdm.dev-dependencies]
 duty = ["duty>=0.7"]
-docs = [
-    "mkdocs>=1.2",
-    "mkdocs-coverage>=0.2",
-    "mkdocs-gen-files>=0.3",
-    "mkdocs-literate-nav>=0.4",
-    "mkdocs-material>=7.3",
-    "mkdocs-section-index>=0.3",
-    "mkdocstrings>=0.16",
-    "toml>=0.10",
-]
 format = [
     "autoflake>=1.4",
     "black>=21.10b0",
@@ -98,10 +61,12 @@ typing = [
 ]
 security = ["safety>=1.10"]
 
+# code formatter
 [tool.black]
 line-length = 120
 exclude = "tests/fixtures"
 
+# import sorting
 [tool.isort]
 line_length = 120
 not_skip = "__init__.py"

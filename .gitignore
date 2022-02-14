@@ -13,3 +13,6 @@ site/
 .pdm.toml
 __pypackages__/
 .venv/
+pyspark_venv.tar.gz
+requirements.txt
+release
