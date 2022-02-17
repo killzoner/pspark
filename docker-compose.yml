@@ -1,0 +1,109 @@
+version: '3'
+services:
+
+  ## MINIO CONFIG (local S3)
+  minio:
+    image: minio/minio:RELEASE.2022-02-01T18-00-14Z
+    ports:
+      - '9001:9001' # console address
+      - '9000:9000' # api address
+    environment:
+      - MINIO_ROOT_USER=12345678
+      - MINIO_ROOT_PASSWORD=12345678
+    command: server /data --console-address :9001
+
+  minio-config:
+    image: minio/mc:RELEASE.2022-02-13T23-26-13Z
+    depends_on:
+      - minio
+    entrypoint: /tmp/s3local/s3_create_buckets.sh
+    volumes:
+      - ./compose/s3local:/tmp/s3local
+
+
+  ## HADOOP AND SPARK CONFIG (cluster mode)
+  # see https://github.com/mohsenasm/spark-on-yarn-cluster and https://github.com/big-data-europe/docker-spark
+  # dataproc is using spark 3, see https://cloud.google.com/dataproc/docs/concepts/versioning/dataproc-release-2.0 for versions
+  spark-client:
+    build: compose/spark-client
+    environment:
+      SERVICE_PRECONDITION: "resourcemanager:8088"
+    networks:
+      - yarn_net
+    depends_on:
+      - resourcemanager
+    env_file:
+      - ./compose/hadoop.env
+
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.1.1-java8
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870 datanode:9864"
+    ports:
+      - '8088:8088' 
+      - '8032:8032' 
+      - '8030:8030' 
+      - '8031:8031' 
+    networks:
+      - yarn_net
+    env_file:
+      - ./compose/hadoop.env
+
+  nodemanager:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.1.1-java8
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870 datanode:9864 resourcemanager:8088"
+    expose:
+      - "1000-65535"
+    networks:
+      - yarn_net
+    env_file:
+      - ./compose/hadoop.env
+
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.1.1-java8
+    ports:
+      - 9870:9870
+      - 9990:9000
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    networks:
+      - yarn_net
+    env_file:
+      - ./compose/hadoop.env
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.1.1-java8
+    ports:
+      - 9864:9864
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    networks:
+      - yarn_net
+    env_file:
+      - ./compose/hadoop.env
+
+  historyserver:
+    image: bde2020/hadoop-historyserver:2.0.0-hadoop3.1.1-java8
+    ports:
+      - 8188:8188
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870 datanode:9864 resourcemanager:8088"
+    volumes:
+      - hadoop_historyserver:/hadoop/yarn/timeline
+    networks:
+      - yarn_net
+    env_file:
+      - ./compose/hadoop.env
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
+  hadoop_historyserver:
+
+networks:
+  yarn_net:

@@ -13,9 +13,9 @@ install_with_pipx() {
 }
 
 install_with_pipx pdm
-install_with_pipx duty
-install_with_pipx mypy
-install_with_pipx flake8
+# install_with_pipx duty
+# install_with_pipx mypy
+# install_with_pipx flake8
 
 if [ -n "${PYTHON_VERSIONS}" ]; then
     for python_version in ${PYTHON_VERSIONS}; do

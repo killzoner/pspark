@@ -2,7 +2,7 @@
 
 import pytest
 
-from pspark import cli
+from hello import cli
 
 
 def test_main():
@@ -17,7 +17,10 @@ def test_show_help(capsys):
     Arguments:
         capsys: Pytest fixture to capture output.
     """
-    with pytest.raises(SystemExit):
-        cli.main(["-h"])
+    try:
+        cli.main([])
+        # raise ValueError('A very specific bad thing happened')
+    except ValueError as err:
+        pytest.fail(repr(err))
     captured = capsys.readouterr()
-    assert "pspark" in captured.out
+    assert "[1, 4, 9, 16]" in captured.out
