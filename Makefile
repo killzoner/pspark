@@ -33,23 +33,16 @@ QUALITY_DUTIES = \
 
 .PHONY: help
 help:
-	@$(DUTY) --list
-
-.PHONY: lock
-lock:
-	@pdm lock
-
-.PHONY: setup
-setup:
-	@bash scripts/setup.sh
+	@$(DUTY) --list | sed 's/^ *//g' | grep -E '^[a-zA-Z_-]+[[:space:]]+ .*$$' | sort | awk 'BEGIN {FS = "[[:space:]]+ "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: check
-check:
+check: ## Check all
 	@bash scripts/multirun.sh duty check-quality check-types
 	@$(DUTY) check-dependencies
 
 .PHONY: release
-release:
+release: ## Create dist and venv release files
 	@pdm venv purge -f
 	@bash scripts/venv_pack.sh
 	@$(DUTY) build
@@ -59,7 +52,7 @@ release:
 	mv ${VENV_FILE} ${RELEASE_DIR}/
 
 .PHONY: test-s3-upload
-test-s3-upload:
+test-s3-upload: ## Test uploading release to local s3
 	sh -c '\
 		export AWS_ACCESS_KEY_ID="12345678" AWS_SECRET_ACCESS_KEY="12345678"; \
 		aws s3 cp ${RELEASE_DIR} s3://pspark-release/HEAD --endpoint-url http://localhost:9000 --recursive; \
@@ -69,7 +62,7 @@ test-s3-upload:
 # see https://spark.apache.org/docs/latest/api/python/user_guide/python_packaging.html#using-conda
 # see also https://conda.github.io/conda-pack/spark.html
 # Dataproc uses YARN, see https://cloud.google.com/dataproc/docs/resources/faq#what_cluster_manager_does_use_with_spark ;
-spark-submit:
+spark-submit: ## Submit job to local spark YARN cluster
 	@test -n "$(APP)" || (echo "APP is undefined, use make sparksubmit APP=<version>" ; exit 1)
 	chmod -R a+r ${RELEASE_DIR} # fix permissions for container
 	$(DOCKER) bash -c '\
@@ -78,12 +71,12 @@ spark-submit:
 	'
 
 .PHONY: spark-shell
-spark-shell:
+spark-shell: ## Open a spark shell for interactive debugging (yarn commands etc.)
 	$(DOCKER) bash
 
-.PHONY: spark-setup-history
+.PHONY: spark-setup-history 
 spark-setup-history:DOCKERFLAGS=-d --name spark-history -p 18080:18080
-spark-setup-history:
+spark-setup-history: ## Setup spark history, should be done once for debug
 	$(DOCKER) bash -c 'setup-history-server.sh && bash'
 
 .PHONY: $(BASIC_DUTIES)
