@@ -12,7 +12,7 @@ DOCKER       ?= docker-compose run \
 
 VERSION     ?=HEAD
 RELEASE_DIR ?=release/${VERSION}
-VENV_FILE   ?= pyspark_venv.tar.gz
+VENV_FILE   ?= psparkvenv.tar.gz
 DUTY = $(shell [ -n "${VIRTUAL_ENV}" ] || echo pdm run) duty
 
 args = $(foreach a,$($(subst -,_,$1)_args),$(if $(value $a),$a="$($a)"))
