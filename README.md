@@ -11,10 +11,11 @@ This project requires `python` 3.9 or above, `pip`, `conda`, `docker` and `docke
 Each app has to respect `python` 3 module and main definition standard, ie structure should be:
 
 ```bash
-├── myappname
-│   ├── __init__.py
-│   ├── __main__.py
-│   └── cli.py # your app definition
+└── src
+    └── myappname
+        ├── __init__.py
+        ├── __main__.py
+        └── cli.py # your app definition
 ```
 
 ## Deploy an app on local Spark YARN cluster
