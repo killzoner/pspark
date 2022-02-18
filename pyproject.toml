@@ -14,8 +14,7 @@ dynamic = ["version"]
 classifiers = []
 dependencies = [
     "pyspark>=3.2.1",
-    "random-word>=1.0.7"
-]
+    "wonderwords>=2.2.0"]
 
 [tool.pdm]
 version = {use_scm = true}
