@@ -7,7 +7,7 @@ Can be called with python src/hello/cli.py
 from typing import List, Optional
 
 from pyspark.sql import SparkSession
-from random_word import RandomWords
+from wonderwords import RandomWord
 
 
 def init_spark():
@@ -17,9 +17,9 @@ def init_spark():
     Returns:
         A spark session.
     """
-    random = RandomWords()
+    rw = RandomWord()
 
-    return SparkSession.builder.appName(f"HelloWorld {random.get_random_word()}").getOrCreate()
+    return SparkSession.builder.appName(f"HelloWorld {rw.word()}").getOrCreate()
 
 
 def main(args: Optional[List[str]] = None) -> int:
