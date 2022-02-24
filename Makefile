@@ -67,7 +67,7 @@ spark-submit: ## Submit job to local spark YARN cluster
 	chmod -R a+r ${RELEASE_DIR} # fix permissions for container
 	$(DOCKER) bash -c '\
 		export PYSPARK_PYTHON=./environment/bin/python ; \
-		/opt/spark/bin/spark-submit --master yarn --deploy-mode cluster --archives "${WORKDIR}/${RELEASE_DIR}/${VENV_FILE}#environment" "src/${APP}/cli.py" ; \
+		/opt/spark/bin/spark-submit --master yarn --deploy-mode cluster --archives "${WORKDIR}/${RELEASE_DIR}/${VENV_FILE}#environment" "src/pspark/${APP}/cli.py" ; \
 	'
 
 .PHONY: spark-shell
