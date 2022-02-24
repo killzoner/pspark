@@ -12,7 +12,8 @@ DOCKER       ?= docker-compose run \
 
 VERSION     ?=HEAD
 RELEASE_DIR ?=release/${VERSION}
-VENV_FILE   ?= psparkvenv.tar.gz
+VENV_FILE   ?=psparkvenv.tar.gz
+ROOT_CLI    ?=cli.py
 DUTY = $(shell [ -n "${VIRTUAL_ENV}" ] || echo pdm run) duty
 
 args = $(foreach a,$($(subst -,_,$1)_args),$(if $(value $a),$a="$($a)"))
@@ -43,16 +44,18 @@ check: ## Check all
 
 .PHONY: release
 release: ## Create dist and venv release files
+	@pdm plugin add pdm-venv
 	@pdm venv purge -f
+	@pdm build --no-sdist
 	@bash scripts/venv_pack.sh
-	@$(DUTY) build
 	rm -rf ${RELEASE_DIR}
 	mkdir -p ${RELEASE_DIR}
-	mv dist/*.tar.gz ${RELEASE_DIR}/
 	mv ${VENV_FILE} ${RELEASE_DIR}/
+	cp ${ROOT_CLI} ${RELEASE_DIR}/${ROOT_CLI}
 
 .PHONY: test-s3-upload
 test-s3-upload: ## Test uploading release to local s3
+	# gsutil cp -r release/** gs://kaiko-pspark-release/
 	sh -c '\
 		export AWS_ACCESS_KEY_ID="12345678" AWS_SECRET_ACCESS_KEY="12345678"; \
 		aws s3 cp ${RELEASE_DIR} s3://pspark-release/HEAD --endpoint-url http://localhost:9000 --recursive; \
@@ -63,11 +66,11 @@ test-s3-upload: ## Test uploading release to local s3
 # see also https://conda.github.io/conda-pack/spark.html
 # Dataproc uses YARN, see https://cloud.google.com/dataproc/docs/resources/faq#what_cluster_manager_does_use_with_spark ;
 spark-submit: ## Submit job to local spark YARN cluster
-	@test -n "$(APP)" || (echo "APP is undefined, use make sparksubmit APP=<version>" ; exit 1)
+	@test -n "$(APP)" || (echo "APP is undefined, use make sparksubmit APP=<app>" ; exit 1)
 	chmod -R a+r ${RELEASE_DIR} # fix permissions for container
 	$(DOCKER) bash -c '\
 		export PYSPARK_PYTHON=./environment/bin/python ; \
-		/opt/spark/bin/spark-submit --master yarn --deploy-mode cluster --archives "${WORKDIR}/${RELEASE_DIR}/${VENV_FILE}#environment" "src/pspark/${APP}/cli.py" ; \
+		/opt/spark/bin/spark-submit --master yarn --deploy-mode cluster --archives "${WORKDIR}/${RELEASE_DIR}/${VENV_FILE}#environment" cli.py --app=${APP} ${ARGS} ; \
 	'
 
 .PHONY: spark-shell
