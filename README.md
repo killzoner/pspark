@@ -12,10 +12,11 @@ Each app has to respect `python` 3 module and main definition standard, ie struc
 
 ```bash
 └── src
-    └── myappname
-        ├── __init__.py
-        ├── __main__.py
-        └── cli.py # your app definition
+    └── pspark
+        └── myappname
+            ├── __init__.py
+            ├── __main__.py
+            └── cli.py # your app definition
 ```
 
 You can then run `python3 src/myappname` or `python3 src/myappname/cli.py`.
