@@ -1,6 +1,7 @@
 """Tests for the `cli` module."""
 
 import pytest
+
 from pspark.hello import cli
 
 

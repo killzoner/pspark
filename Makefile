@@ -44,7 +44,7 @@ check: ## Check all
 
 .PHONY: release
 release: ## Create dist and venv release files
-	@pdm plugin add pdm-venv
+	@pdm plugin add pdm-venv --pip-args=pdm-venv==0.5.0 # fix version of pdm-venv to match pdm 1.13.2
 	@pdm venv purge -f
 	@pdm build --no-sdist
 	@bash scripts/venv_pack.sh
