@@ -5,13 +5,9 @@ build-backend = "pdm.pep517.api"
 [project]
 name = "pspark"
 description = "Python Spark monorepo"
-authors = [{name = "None", email = "None"}]
-license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">=3.9"
-keywords = []
 dynamic = ["version"]
-classifiers = []
 dependencies = [
     "pyspark>=3.2.1",
     "wonderwords>=2.2.0"]
@@ -19,6 +15,7 @@ dependencies = [
 [tool.pdm]
 version = {use_scm = true}
 package-dir = "src"
+includes = ["src/"]
 
 [tool.pdm.dev-dependencies]
 duty = ["duty>=0.7"]
