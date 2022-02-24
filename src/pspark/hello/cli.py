@@ -5,6 +5,7 @@ Can be called with python src/hello/cli.py
 """
 
 import argparse
+import logging
 from typing import List, Optional
 
 from pyspark.sql import SparkSession
@@ -47,15 +48,24 @@ def main(args: Optional[List[str]] = None) -> int:
     Returns:
         An exit code.
     """
+    # init parser
     parser = get_parser()
     opts = parser.parse_args(args=args)
 
     session = init_spark()
     sc = session.sparkContext
-    print(f"ApplicationId:  {sc.applicationId}, args: {opts}")
 
+    # get logger
+    logger = logging.getLogger("py4j")
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.StreamHandler())
+
+    logger.info(f"ApplicationId:  {sc.applicationId}, args: {opts}")
+
+    # run app
     nums = sc.parallelize([1, 2, 3, 4])
-    print(nums.map(lambda num: num * num).collect())
+    logger.info(nums.map(lambda num: num * num).collect())
+    print(nums.map(lambda num: num * num).collect())  # kept for tests
 
     return 0
 

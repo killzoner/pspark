@@ -3,7 +3,32 @@
 import argparse
 import importlib
 import sys
+import traceback
 from typing import List, Optional
+
+
+def exception_hook(kind, value, tb):
+    """
+    Intended to be assigned to sys.exception as a hook.
+
+    Gives programmer opportunity to do something useful with info from uncaught exceptions.
+
+    Arguments:
+        kind: Exception type
+        value: Exception's value
+        tb: Exception's traceback
+    """
+    # NOTE: because format() is returning a list of string,
+    # I'm going to join them into a single string, separating each with a new line
+    traceback_details = "\n".join(traceback.extract_tb(tb).format())
+
+    error_msg = (
+        "An exception has been raised outside of a try/except!!!\n"
+        f"Type: {kind}\n"
+        f"Value: {value}\n"
+        f"Traceback: {traceback_details}"
+    )
+    print(error_msg)
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -29,12 +54,18 @@ def main(args: Optional[List[str]] = None) -> int:
     Returns:
         An exit code.
     """
+    # init exception hook
+    sys.excepthook = exception_hook
+
+    # init parser
     parser = get_parser()
     opts, appargs = parser.parse_known_args(args=args)
 
+    # import app module
     pkg = importlib.import_module(f"pspark.{opts.app}.cli")
     print(pkg)
 
+    # run app module
     return pkg.main(appargs)
 
 
