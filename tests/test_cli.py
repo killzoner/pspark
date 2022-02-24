@@ -1,8 +1,7 @@
 """Tests for the `cli` module."""
 
 import pytest
-
-from hello import cli
+from pspark.hello import cli
 
 
 def test_main():

@@ -10,7 +10,7 @@ from pathlib import Path
 
 from duty import duty
 
-PY_SRC_PATHS = (Path(_) for _ in ("src", "tests", "duties.py"))
+PY_SRC_PATHS = (Path(_) for _ in ("src", "tests", "duties.py", "cli.py"))
 PY_SRC_LIST = tuple(str(_) for _ in PY_SRC_PATHS)
 PY_SRC = " ".join(PY_SRC_LIST)
 TESTING = os.environ.get("TESTING", "0") in {"1", "true"}
@@ -169,18 +169,6 @@ def format(ctx):
     )
     ctx.run(f"isort {PY_SRC}", title="Ordering imports", pty=PTY)
     ctx.run(f"black {PY_SRC}", title="Formatting code", pty=PTY)
-
-
-@duty
-def build(ctx):
-    """
-    Release a new Python package.
-
-    Arguments:
-        ctx: The context instance (passed automatically).
-    """
-    ctx.run("pdm build", title="Building dist/wheel", pty=PTY)
-    ctx.run("mv dist/*.tar.gz dist/pspark.tar.gz")
 
 
 @duty(silent=True)
