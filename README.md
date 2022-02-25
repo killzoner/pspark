@@ -19,7 +19,7 @@ Each app has to respect `python` 3 module and main definition standard, ie struc
             └── cli.py # your app definition
 ```
 
-You can then run `python3 src/myappname` or `python3 src/myappname/cli.py`.
+You can then run `python3 src/pspark/myappname` or `python3 src/pspark/myappname/cli.py`.
 Make sure you have enabled PEP-582 so it works (run `eval "$(pdm --pep582)"` in your current shell)
 
 ## Deploy an app on local Spark YARN cluster
