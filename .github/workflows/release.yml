@@ -43,8 +43,7 @@ jobs:
     - name: Set up PDM
       uses: pdm-project/setup-pdm@v2.5
       with:
-        # TODO: update to 1.13.3 and later
-        version: 1.13.2       # The version of PDM to install. Leave it as empty to use the latest version from PyPI
+        version: 1.13.3       # The version of PDM to install. Leave it as empty to use the latest version from PyPI
         prerelease: false     # Allow prerelease versions to be installed
         enable-pep582: false  # Enable PEP 582 package loading globally
         python-version: ${{ matrix.python-version }}
@@ -53,9 +52,9 @@ jobs:
       run: pdm install -G duty -G tests
 
     - name: Bundle venv and dist
-      # TODO: migrate to `pdm config python.use_venv true` when pdm-venv has a new release which matches pdm 1.13.3 changes
-      # see https://pdm.fming.dev/configuration/
       run: |
-        pdm config use_venv true
         VERSION=$(echo ${GITHUB_REF_NAME})
         make release VERSION=${VERSION}
+      env:
+          PDM_USE_VENV: "true" # needed for installing wheel in virtual env, equivalent to `pdm config python.use_venv true``
+
