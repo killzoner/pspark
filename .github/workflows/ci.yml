@@ -47,10 +47,10 @@ jobs:
         key: checks-cache
 
     - name: Resolving dependencies
-      run: pdm lock
+      run: pdm install
 
     - name: Install dependencies
-      run: pdm install -G duty -G docs -G quality -G typing -G security
+      run: pdm install -G duty -G quality -G typing -G security
 
     - name: Check the code quality
       run: pdm run duty check-quality
